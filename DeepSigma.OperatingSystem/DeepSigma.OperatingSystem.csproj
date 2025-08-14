@@ -15,4 +15,8 @@
     <Description>Library for interacting with operating system componets such as the file system, terminal, Widows Registry, and process.</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="OneOf" Version="3.0.271" />
+  </ItemGroup>
+
 </Project>

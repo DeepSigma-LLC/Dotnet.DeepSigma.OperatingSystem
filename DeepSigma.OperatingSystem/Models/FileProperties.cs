@@ -14,7 +14,6 @@ namespace DeepSigma.OperatingSystem.Models
         public DateTime? CreationTimeUtc { get; set; } = null;
         public DateTime? LastAccessTimeUtc { get; set; } = null;
         public DateTime? LastWriteTimeUtc { get; set; } = null;
-
         public FileProperties() { }
     }
 }

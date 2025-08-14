@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DeepSigma.OperatingSystem;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace DeepSigma.DataAccess.OperatingSystem
 {
     public static  class Terminal
     {
-        public static void RunCommand(string command, string? args = null)
+        public static ResultMonad<string> RunCommand(string command, string? args = null)
         {
             var psi = new ProcessStartInfo
             {
@@ -30,10 +31,14 @@ namespace DeepSigma.DataAccess.OperatingSystem
 
             process.WaitForExit();
 
-            if (!string.IsNullOrWhiteSpace(errors))
+            if (string.IsNullOrWhiteSpace(errors) == false)
             {
-                
+                return new Error(new ExceptionLog(new Exception(errors), "Error executing terminal command.")
+                );
             }
+
+            return new Success<string>(output.Trim());
         }
+
     }
 }
