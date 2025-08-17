@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using DeepSigma.General;
 
 namespace DeepSigma.OperatingSystem
 {
+    /// <summary>
+    /// A class to manage processes on the local machine.
+    /// </summary>
     public static class ProcessManager
     {
         /// <summary>
@@ -18,12 +17,17 @@ namespace DeepSigma.OperatingSystem
             return Process.GetProcesses();
         }
 
+        /// <summary>
+        /// Get all active processes by name.
+        /// </summary>
+        /// <param name="processName"></param>
+        /// <returns></returns>
         public static ResultMonad<Process[]> GetActiveProcessByName(string processName)
         {
             if (string.IsNullOrWhiteSpace(processName))
             {
                 var exception = new ArgumentException("Process name cannot be null or empty.", nameof(processName));
-                return new Error(new ExceptionLog(exception, "Process name cannot be null or empty."));
+                return new Error(new ExceptionLogItem(exception, "Process name cannot be null or empty."));
             }
             return new Success<Process[]>(Process.GetProcessesByName(processName));
         }
@@ -38,10 +42,10 @@ namespace DeepSigma.OperatingSystem
         {
             if (string.IsNullOrWhiteSpace(processName))
             {
-                return new Errors( [new ExceptionLog( new ArgumentException("Process name cannot be null or empty.", nameof(processName)))]);
+                return new Errors( [new ExceptionLogItem( new ArgumentException("Process name cannot be null or empty.", nameof(processName)))]);
             }
 
-            List<ExceptionLog> error_log = [];
+            List<ExceptionLogItem> error_log = [];
             int count = 0;
             Process[]? processes = Process.GetProcessesByName(processName);
             foreach (Process process in processes)
@@ -53,7 +57,7 @@ namespace DeepSigma.OperatingSystem
                 }
                 catch (Exception ex)
                 {
-                    error_log.Add(new ExceptionLog(ex, $"Failed to kill process {processName}."));
+                    error_log.Add(new ExceptionLogItem(ex, $"Failed to kill process {processName}."));
                 }
             }
 

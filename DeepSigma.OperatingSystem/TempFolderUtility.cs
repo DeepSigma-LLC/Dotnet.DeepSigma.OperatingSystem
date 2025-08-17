@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 
-
-namespace BusinessLogic
+namespace DeepSigma.OperatingSystem
 {
+    /// <summary>
+    /// A utility class to create temporary directories in the user's Downloads folder.
+    /// </summary>
     public class TempFolderUtility
     {
         private static readonly Guid KnownFolderDownloads = new Guid("374DE290-123F-4565-9164-39C4925E467B");
@@ -33,7 +29,10 @@ namespace BusinessLogic
             return directoryInfo;
         }
 
-        // Use KnownFolders GUID to get Downloads folder
+        /// <summary>
+        /// Use KnownFolders GUID to get Downloads directory path.
+        /// </summary>
+        /// <returns></returns>
         public static string? GetDownloadsPath()
         {
             IntPtr outPath;

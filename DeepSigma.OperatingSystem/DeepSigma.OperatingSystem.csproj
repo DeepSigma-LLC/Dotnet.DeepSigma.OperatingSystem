@@ -9,13 +9,14 @@
     <Authors>DeepSigma LLC</Authors>
     <PackageProjectUrl>https://github.com/DeepSigma-LLC/Dotnet.DeepSigma.OperatingSystem.git</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DeepSigma-LLC/Dotnet.DeepSigma.OperatingSystem.git</RepositoryUrl>
-    <AssemblyVersion>1.0.0.1</AssemblyVersion>
-    <FileVersion>$(AssemblyVersion)</FileVersion>
-    <Version>$(AssemblyVersion)</Version>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <Version>1.0.0.1</Version>
     <Description>Library for interacting with operating system componets such as the file system, terminal, Widows Registry, and process.</Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DeepSigma.General" Version="1.0.0.1" />
     <PackageReference Include="OneOf" Version="3.0.271" />
   </ItemGroup>
 

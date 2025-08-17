@@ -1,12 +1,7 @@
-﻿using DeepSigma.OperatingSystem;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using DeepSigma.General;
 
-namespace DeepSigma.DataAccess.OperatingSystem
+namespace DeepSigma.OperatingSystem
 {
     public static  class Terminal
     {
@@ -33,7 +28,7 @@ namespace DeepSigma.DataAccess.OperatingSystem
 
             if (string.IsNullOrWhiteSpace(errors) == false)
             {
-                return new Error(new ExceptionLog(new Exception(errors), "Error executing terminal command.")
+                return new Error(new ExceptionLogItem(new Exception(errors), "Error executing terminal command.")
                 );
             }
 

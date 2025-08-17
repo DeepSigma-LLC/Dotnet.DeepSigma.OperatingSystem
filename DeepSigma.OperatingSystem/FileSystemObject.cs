@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using DeepSigma.OperatingSystem.Enums;
+﻿using DeepSigma.OperatingSystem.Enums;
 using DeepSigma.OperatingSystem.Models;
 
-namespace DeepSigma.DataAccess.OperatingSystem
+namespace DeepSigma.OperatingSystem
 {
+    /// <summary>
+    /// Represents a file system object, which can be either a file or a directory.
+    /// </summary>
     public class FileSystemObject
     {
         public FileSystemType? Type { get; set; } = null;
@@ -18,6 +15,11 @@ namespace DeepSigma.DataAccess.OperatingSystem
         public FileProperties FileProperties { get; set; } = new();
         public FileSystemObject[] Files { get; set; } = [];
         public FileSystemObject[] Directories { get; set; } = [];
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileSystemObject"/> class with the specified full file path.
+        /// </summary>
+        /// <param name="FullFilePath"></param>
         public FileSystemObject(string FullFilePath)
         {
             OriginalPath = FullFilePath;

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace DeepSigma.OperatingSystem.Models
 {
+    /// <summary>
+    /// Represents primary properties of a file, including its name, extension, creation time, last access time, and last write time.
+    /// </summary>
     public class FileProperties
     {
         public string? FileName { get; set; } = null;
