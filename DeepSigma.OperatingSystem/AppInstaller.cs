@@ -1,5 +1,6 @@
 ﻿
 using DeepSigma.OperatingSystem.Models;
+using DeepSigma.General.Monads;
 
 namespace DeepSigma.OperatingSystem
 {
@@ -9,11 +10,11 @@ namespace DeepSigma.OperatingSystem
         {
             ApplicationVersion? latest_version = AppVersioningService.GetLatestApplicationVersionFromDirectory(installation_directory);
 
-            if(latest_version is null) return;
+            if (latest_version is null) return; 
             if(latest_version.IsGreaterThan(current_version) == false) return;
 
             Terminal.RunCommand("AppInstaller", $"--app={app_name} --source={source_directory} --target={target_install_directory} --clisource={cli_source_directory} --auto={auto}");
+            Environment.Exit(0); // Close this app after initiating the app installer program through terminal.
         }
-
     }
 }
