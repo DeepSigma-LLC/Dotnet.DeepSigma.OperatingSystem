@@ -1,0 +1,14 @@
+﻿# This is a custom ignore file the AppInstall application.
+# Comments are denoted by "#"
+# Designate what directories and files to ignore during update by including them in this file.
+#
+# For example: 
+# *.txt will not delete or copy any file that ends in .txt.
+# Config.* will not delete any file that start with ""Config"
+# Including "\Config" will exclude that directory from deletion
+# Including "Config.json" will excluded that file from deletion
+# Including "\*config" will exclude any directory that ends in config.
+# Including "\Config*" will exclude any directory that starts with config.
+
+Config.json
+AppIgnore.txt
