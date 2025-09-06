@@ -9,7 +9,7 @@ namespace DeepSigma.OperatingSystem
     public class FileSystemObject
     {
         public FileSystemType? Type { get; set; } = null;
-        public string OriginalPath { get; set; }
+        public string OriginalPath { get; set; } = string.Empty;
         public string DirectoryPath { get; set; } = string.Empty;
         public string DirectoryName { get; set; } = string.Empty;
         public FileProperties FileProperties { get; set; } = new();
@@ -31,8 +31,12 @@ namespace DeepSigma.OperatingSystem
 
             SetFileProperties();
             SetFileSystemType();
-            LoadFiles();
-            LoadDirectories();
+
+            if(Type.HasValue && Type.Value == FileSystemType.Directory)
+            {
+                LoadFiles();
+                LoadDirectories();
+            }
         }
 
         private void SetFileProperties()
@@ -57,8 +61,8 @@ namespace DeepSigma.OperatingSystem
 
         private void LoadFiles()
         {
-            List<FileSystemObject> files = new List<FileSystemObject>();
-            foreach (var file in Directory.GetFiles(DirectoryPath))
+            List<FileSystemObject> files = [];
+            foreach (string file in Directory.GetFiles(DirectoryPath))
             {
                 files.Add(new FileSystemObject(file));
             }
@@ -67,10 +71,10 @@ namespace DeepSigma.OperatingSystem
 
         private void LoadDirectories()
         {
-            List<FileSystemObject> directories = new List<FileSystemObject>();
-            foreach (var file in Directory.GetFiles(DirectoryPath))
+            List<FileSystemObject> directories = [];
+            foreach (string directory in Directory.GetDirectories(DirectoryPath))
             {
-                directories.Add(new FileSystemObject(file));
+                directories.Add(new FileSystemObject(directory));
             }
             Directories = directories.ToArray();
         }

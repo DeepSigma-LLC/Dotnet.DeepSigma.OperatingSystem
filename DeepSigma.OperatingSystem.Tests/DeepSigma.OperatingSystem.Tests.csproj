@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\brend\.nuget\packages\deepsigma.unittest\1.0.0.1\contentFiles\any\net9.0\testhost.dll" />
+    <Content Remove="C:\Users\brend\.nuget\packages\deepsigma.unittest\1.0.0.1\contentFiles\any\net9.0\testhost.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+    <PackageReference Include="DeepSigma.UnitTest" Version="1.0.0.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeepSigma.OperatingSystem\DeepSigma.OperatingSystem.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\TestDirectories_DoNotDelete\0_0_0_0\" />
+    <Folder Include="Data\TestDirectories_DoNotDelete\1_0_0_0\" />
+    <Folder Include="Data\TestDirectories_DoNotDelete\1_0_0_1\" />
+    <Folder Include="Data\TestDirectories_DoNotDelete\1_0_1_0\" />
+    <Folder Include="Data\TestDirectories_DoNotDelete\1_1_0_0\" />
+    <Folder Include="Data\TestDirectories_DoNotDelete\11_11_11_11\" />
+    <Folder Include="Data\TestDirectories_DoNotDelete\11_11_15_110\" />
+    <Folder Include="Data\TestDirectories_DoNotDelete\0_0_0_BadForm\" />
+  </ItemGroup>
+
+</Project>
