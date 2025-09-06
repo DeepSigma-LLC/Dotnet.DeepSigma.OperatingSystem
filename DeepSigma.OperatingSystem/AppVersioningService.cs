@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace DeepSigma.OperatingSystem
 {
+    /// <summary>
+    /// Provides services related to application versioning, such as retrieving the latest version from a deployment directory.
+    /// </summary>
     public static class AppVersioningService
     {
         /// <summary>

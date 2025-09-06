@@ -11,8 +11,9 @@
     <RepositoryUrl>https://github.com/DeepSigma-LLC/Dotnet.DeepSigma.OperatingSystem.git</RepositoryUrl>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
-    <Version>1.0.0.2</Version>
+    <Version>1.0.0.3</Version>
     <Description>Library for interacting with operating system componets such as the file system, terminal, Widows Registry, and process.</Description>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

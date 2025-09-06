@@ -57,8 +57,5 @@ namespace DeepSigma.OperatingSystem
             }
             return new Error(new ExceptionLogItem(new Exception(errors), "Error executing terminal command."));
         }
-
-
-
     }
 }

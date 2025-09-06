@@ -1,7 +1,9 @@
 ﻿using DeepSigma.General.Monads;
-
 namespace DeepSigma.OperatingSystem
 {
+    /// <summary>
+    /// A class to execute Python scripts and manage Python environments.
+    /// </summary>
     public static class PythonExecutor
     {
         /// <summary>
@@ -9,6 +11,7 @@ namespace DeepSigma.OperatingSystem
         /// </summary>
         /// <param name="script_path">The path to the Python script.</param>
         /// <param name="script_args">Optional arguments to pass to the script.</param>
+        /// <param name="python_exe_file_path">Optional python.exe path. Enables users to select a specific virutal enviornment executor.</param>
         /// <returns>The output of the script execution.</returns>
         public static ResultMonad<string> ExecuteScript(string script_path, string? script_args = null, string? python_exe_file_path = null)
         {
@@ -23,19 +26,33 @@ namespace DeepSigma.OperatingSystem
         /// Gets Python virtual environments available on the system.
         /// </summary>
         /// <returns></returns>
-        public static ResultMonad<string> GetPythonVirtualEnvironments()
+        public static ResultMonad<string[]> GetPythonVirtualEnvironments()
         {
             string py_launcher_command = "py";
-            return Terminal.RunCommand(py_launcher_command, "--list");
+            ResultMonad<string> result =  Terminal.RunCommand(py_launcher_command, "--list");
+
+            ResultMonad<string[]> final_results = result.Match<ResultMonad<string[]>>(
+                  success => new Success<string[]>(success.Result?.Split(" ")),
+                  error => new Error(error.Exception)
+            );
+
+            return final_results;
         }
 
         /// <summary>
         /// Gets install locations of Python on the system.
         /// </summary>
         /// <returns></returns>
-        public static ResultMonad<string> GetPythonInstallLocations()
+        public static ResultMonad<string[]> GetPythonInstallLocations()
         {
-            return Terminal.RunCommand("where", "python");
+            ResultMonad<string> result = Terminal.RunCommand("where", "py");
+
+            ResultMonad<string[]> final_results = result.Match<ResultMonad<string[]>>(
+                success => new Success<string[]>(success.Result?.Split(";")),
+                error => new Error(error.Exception)
+            );
+
+            return final_results;
         }
 
         /// <summary>
@@ -46,6 +63,5 @@ namespace DeepSigma.OperatingSystem
         {
             return Terminal.IsProgramInstalled("python") || Terminal.IsProgramInstalled("py");
         }
-
     }
 }

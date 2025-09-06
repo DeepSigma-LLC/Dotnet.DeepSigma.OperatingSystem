@@ -12,4 +12,8 @@
 # Including "\Config*" will select any directory that starts with Config.
 
 Config.json
-AppIgnore.txt
+*.txt
+Tester*
+\Data
+\*Test
+\Time*

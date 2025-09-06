@@ -57,11 +57,15 @@ namespace DeepSigma.OperatingSystem
                 }
                 else if (filter.StartsWithAnything)
                 {
-                    if (file_system_item.StartsWith(search_text)) return true;
+                    if (file_system_item.EndsWith(search_text)) return true;
                 }
                 else if (filter.EndsWithAnything)
                 {
-                    if (file_system_item.EndsWith(search_text)) return true;
+                    if (file_system_item.StartsWith(search_text)) return true;
+                }
+                else
+                {
+                    if (file_system_item == search_text) return true;
                 }
             }
             return false;
@@ -76,6 +80,8 @@ namespace DeepSigma.OperatingSystem
             FileSystemFilterCollection results = new FileSystemFilterCollection();
             foreach (string filter in filters)
             {
+                if (string.IsNullOrEmpty(filter)) continue;
+
                 (bool IsDirectory, bool StartsWithAnything, bool EndsWithAnything, bool IsComment) = GetFilterInfo(filter);
                 if (IsComment) continue;
                 results.Items.Add(new FileSystemFilterItem(filter, IsDirectory ? FileSystemType.Directory : FileSystemType.File, StartsWithAnything, EndsWithAnything));
@@ -90,7 +96,7 @@ namespace DeepSigma.OperatingSystem
         /// <returns></returns>
         private static string GetCleanedFilterText(string filter)
         {
-            return filter.Replace("\\", null).Replace("*", null);
+            return filter.Replace(@"\", null).Replace("*", null);
         }
 
 

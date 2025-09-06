@@ -33,7 +33,7 @@ namespace DeepSigma.OperatingSystem.Tests.Tests
         {
             string test_directory = TestConfig.GetTestDataDirectoryPath();
             FileSystemObject fso = new(test_directory, 1);
-            Assert.True(fso.Type == FileSystemType.Directory);
+            Assert.True(fso.ObjectSystemType == FileSystemType.Directory);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace DeepSigma.OperatingSystem.Tests.Tests
             string test_directory = TestConfig.GetTestVersionDirectoryPath();
             FileSystemObject fso = new(test_directory, 2);
             FileSystemObject[] files = fso.Files;
-            Assert.True(files[0].Type == FileSystemType.File);
+            Assert.True(files[0].ObjectSystemType == FileSystemType.File);
         }
 
         [Fact]

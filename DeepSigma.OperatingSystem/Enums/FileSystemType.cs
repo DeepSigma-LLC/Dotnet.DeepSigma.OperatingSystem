@@ -7,7 +7,13 @@ namespace DeepSigma.OperatingSystem.Enums
     /// </summary>
     public enum FileSystemType
     {
+        /// <summary>
+        /// Indicates that the file system object is a file.
+        /// </summary>
         File,
+        /// <summary>
+        /// Indicates that the file system object is a directory.
+        /// </summary>
         Directory
     }
 }

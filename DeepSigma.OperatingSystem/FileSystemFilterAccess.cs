@@ -10,8 +10,8 @@ namespace DeepSigma.OperatingSystem
 {
     internal class FileSystemFilterAccess
     {
-        private string directory_path { get; set; }
-        private string file_name { get; set; }
+        private string DirectoryPath { get; set; }
+        private string FileName { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileSystemFilterAccess"/> class.
@@ -20,8 +20,8 @@ namespace DeepSigma.OperatingSystem
         /// <param name="file_name">File name of the ignore file.</param>
         internal FileSystemFilterAccess(string directory_path, string file_name)
         {
-            this.directory_path = directory_path;
-            this.file_name = file_name;
+            this.DirectoryPath = directory_path;
+            this.FileName = file_name;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace DeepSigma.OperatingSystem
         /// <returns></returns>
         internal IEnumerable<string> GetIgnoreFilters()
         {
-            string FullPath = Path.Combine(directory_path, file_name);
+            string FullPath = Path.Combine(DirectoryPath, FileName);
             if (!File.Exists(FullPath)) { yield break; }
 
             string[] fileLines = File.ReadAllLines(FullPath);
@@ -41,7 +41,7 @@ namespace DeepSigma.OperatingSystem
                 {
                     if (IsComment(word))
                     {
-                        continue;
+                        break;
                     }
                     yield return word.Trim();
                 }

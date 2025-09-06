@@ -8,12 +8,40 @@ namespace DeepSigma.OperatingSystem
     /// </summary>
     public class FileSystemObject
     {
-        public FileSystemType? Type { get; set; } = null;
+
+        /// <summary>
+        /// Type of file system object: File or Directory.
+        /// </summary>
+        public FileSystemType? ObjectSystemType { get; set; } = null;
+
+        /// <summary>
+        /// Original full path provided during initialization.
+        /// </summary>
         public string OriginalPath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Directory path of the file or directory.
+        /// </summary>
         public string DirectoryPath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Name of the directory.
+        /// </summary>
         public string DirectoryName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Properties of the file, if the object is a file.
+        /// </summary>
         public FileProperties FileProperties { get; set; } = new();
+
+        /// <summary>
+        /// Array of files contained within the directory, if the object is a directory.
+        /// </summary>
         public FileSystemObject[] Files { get; set; } = [];
+
+        /// <summary>
+        /// Array of directories contained within the directory, if the object is a directory.
+        /// </summary>
         public FileSystemObject[] Directories { get; set; } = [];
         private int MaxNumberOfLevelsToNavigateDown { get; set; }
 
@@ -58,7 +86,7 @@ namespace DeepSigma.OperatingSystem
             SetFileProperties();
             SetFileSystemType();
 
-            if(Type.HasValue && Type.Value == FileSystemType.Directory)
+            if(ObjectSystemType.HasValue && ObjectSystemType.Value == FileSystemType.Directory)
             {
                 LoadFiles();
                 LoadDirectories();
@@ -113,11 +141,11 @@ namespace DeepSigma.OperatingSystem
         {
             if (IsFile())
             {
-                Type = FileSystemType.File;
+                ObjectSystemType = FileSystemType.File;
             }
             else if(IsDirectory())
             {
-                Type = FileSystemType.Directory;
+                ObjectSystemType = FileSystemType.Directory;
             }
         }
 
