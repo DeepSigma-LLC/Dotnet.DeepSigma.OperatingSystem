@@ -1,19 +1,42 @@
 ﻿using DeepSigma.OperatingSystem.Models;
 using DeepSigma.OperatingSystem.Enums;
 
-namespace DeepSigma.OperatingSystem.IgnoreFile
+namespace DeepSigma.OperatingSystem
 {
     /// <summary>
-    /// Engine to process ignore files and generate filters.
+    /// Engine to process ignore file text values and generate filters.
     /// </summary>
-    public class FileSystemSelectionEngine
+    public class FileSystemSelectionService
     {
         private FileSystemFilterAccess filterController { get; set; }
         private List<string> filters { get; set; } = [];
         private FileSystemFilterCollection filterCollection { get; set; } = new();
-        public FileSystemSelectionEngine(string file_path, string file_name)
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileSystemSelectionService"/> class.
+        /// </summary>
+        /// <param name="directory_path">Directory path of the ignore file.</param>
+        /// <param name="file_name">Ignore file name.</param>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        public FileSystemSelectionService(string directory_path, string file_name)
         {
-            filterController = new FileSystemFilterAccess(file_path, file_name);
+            if(string.IsNullOrWhiteSpace(directory_path))
+            {
+                throw new ArgumentException("Directory path cannot be null or empty.", nameof(directory_path));
+            }
+
+            if (string.IsNullOrWhiteSpace(file_name))
+            {
+                throw new ArgumentException("File name cannot be null or empty.", nameof(file_name));
+            }
+
+            if (!Directory.Exists(directory_path))
+            {
+                throw new DirectoryNotFoundException($"The specified directory does not exist: {directory_path}");
+            }
+
+            filterController = new FileSystemFilterAccess(directory_path, file_name);
             filters = filterController.GetIgnoreFilters().ToList();
             SaveFilters();
         }

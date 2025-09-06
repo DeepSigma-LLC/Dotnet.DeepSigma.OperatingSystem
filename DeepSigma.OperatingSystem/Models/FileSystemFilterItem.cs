@@ -1,5 +1,4 @@
 ﻿using DeepSigma.OperatingSystem.Enums;
-using DeepSigma.OperatingSystem.IgnoreFile;
 
 namespace DeepSigma.OperatingSystem.Models
 {

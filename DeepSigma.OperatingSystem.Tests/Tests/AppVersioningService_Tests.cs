@@ -17,32 +17,16 @@ namespace DeepSigma.OperatingSystem.Tests.Tests
         [Fact]
         public void GetLatestApplicationVersionFromDirectory_ShouldReturnValue()
         {
-            ApplicationVersion? result = AppVersioningService.GetLatestApplicationVersionFromDirectory(GetTestDirectoryPath());
+            ApplicationVersion? result = AppVersioningService.GetLatestApplicationVersionFromDirectory(TestConfig.GetTestVersionDirectoryPath());
             Assert.NotNull(result);
         }
 
         [Fact]
         public void GetLatestApplicationVersionFromDirectory_ShouldMatchExpectedValue()
         {
-            ApplicationVersion? actual = AppVersioningService.GetLatestApplicationVersionFromDirectory(GetTestDirectoryPath());
+            ApplicationVersion? actual = AppVersioningService.GetLatestApplicationVersionFromDirectory(TestConfig.GetTestVersionDirectoryPath());
             ApplicationVersion expected = new(11, 11, 15, 110);
             Assert.Equal(expected, actual);
-        }
-
-
-        private string GetTestDirectoryPath()
-        {
-            string base_directory = AppDomain.CurrentDomain.BaseDirectory;
-
-            for (int i = 0; i <= 3; i++)
-            {
-                DirectoryInfo? parent_directory = Directory.GetParent(base_directory);
-                if (parent_directory is null) break;
-                base_directory = parent_directory.FullName;
-            }
-
-            string full_directory_path = Path.Combine(base_directory, "Data", "TestDirectories_DoNotDelete");
-            return full_directory_path;
         }
     }
 }

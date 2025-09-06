@@ -20,7 +20,7 @@ namespace DeepSigma.OperatingSystem
             if (Directory.Exists(production_deployment_directory) == false) return null;
 
             List<ApplicationVersion> versions = [];
-            FileSystemObject fileSystem = new(production_deployment_directory);
+            FileSystemObject fileSystem = new(production_deployment_directory, 5);
             string[] DirectoryNames = fileSystem.Directories.Select(x => x.DirectoryName).ToArray();
             foreach (string DirectoryName in DirectoryNames)
             {

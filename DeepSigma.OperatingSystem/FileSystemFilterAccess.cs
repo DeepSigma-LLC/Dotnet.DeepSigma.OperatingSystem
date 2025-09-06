@@ -6,15 +6,21 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeepSigma.OperatingSystem.IgnoreFile
+namespace DeepSigma.OperatingSystem
 {
     internal class FileSystemFilterAccess
     {
-        private string file_path { get; set; }
+        private string directory_path { get; set; }
         private string file_name { get; set; }
-        internal FileSystemFilterAccess(string file_path, string file_name)
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileSystemFilterAccess"/> class.
+        /// </summary>
+        /// <param name="directory_path">Directory path of the ignore file.</param>
+        /// <param name="file_name">File name of the ignore file.</param>
+        internal FileSystemFilterAccess(string directory_path, string file_name)
         {
-            this.file_path = file_path;
+            this.directory_path = directory_path;
             this.file_name = file_name;
         }
 
@@ -24,7 +30,7 @@ namespace DeepSigma.OperatingSystem.IgnoreFile
         /// <returns></returns>
         internal IEnumerable<string> GetIgnoreFilters()
         {
-            string FullPath = Path.Combine(file_path, file_name);
+            string FullPath = Path.Combine(directory_path, file_name);
             if (!File.Exists(FullPath)) { yield break; }
 
             string[] fileLines = File.ReadAllLines(FullPath);
