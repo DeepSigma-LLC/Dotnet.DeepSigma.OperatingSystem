@@ -55,6 +55,6 @@ public static class Terminal
             return new Success<string>(output.Trim());
 
         }
-        return new Error(new ExceptionLogItem(new Exception(errors), "Error executing terminal command."));
+        return new Error(new Exception($"Error executing terminal command: {errors}"));
     }
 }
