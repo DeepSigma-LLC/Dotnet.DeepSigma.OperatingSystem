@@ -1,6 +1,5 @@
-﻿using DeepSigma.OperatingSystem;
+﻿
 using Xunit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DeepSigma.OperatingSystem.Tests.Tests
 {
