@@ -50,7 +50,7 @@ public static class Terminal
 
         process.WaitForExit();
 
-        if (process.ExitCode == 0 && string.IsNullOrWhiteSpace(errors) == true)
+        if (process.ExitCode == 0)
         {
             return new Success<string>(output.Trim());
 

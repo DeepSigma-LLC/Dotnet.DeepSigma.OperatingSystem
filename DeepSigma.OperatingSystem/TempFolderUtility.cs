@@ -17,11 +17,7 @@ public class TempFolderUtility
     /// <exception cref="InvalidOperationException"></exception>
     public static DirectoryInfo CreateTempDirectoryInDownloads(string? prefix = null)
     {
-        string? downloadsPath = GetDownloadsPath();
-        if (downloadsPath == null)
-        {
-            throw new InvalidOperationException("Unable to locate Downloads folder.");
-        }
+        string? downloadsPath = GetDownloadsPath() ?? throw new InvalidOperationException("Unable to locate Downloads folder.");
 
         string tempFolderName = (prefix ?? String.Empty) + Guid.NewGuid().ToString();
         string fullPath = Path.Combine(downloadsPath, tempFolderName);
@@ -35,13 +31,9 @@ public class TempFolderUtility
     /// <returns></returns>
     public static string? GetDownloadsPath()
     {
-        IntPtr outPath;
-        int hr = SHGetKnownFolderPath(KnownFolderDownloads, 0, IntPtr.Zero, out outPath);
+        int hr = SHGetKnownFolderPath(KnownFolderDownloads, 0, IntPtr.Zero, out nint outPath);
 
-        if (hr != 0)
-        {
-            return null; // or throw an exception
-        }
+        if (hr != 0) return null;
 
         string? path = Marshal.PtrToStringUni(outPath);
         Marshal.FreeCoTaskMem(outPath);
