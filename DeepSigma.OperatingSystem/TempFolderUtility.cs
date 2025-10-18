@@ -7,7 +7,7 @@ namespace DeepSigma.OperatingSystem;
 /// </summary>
 public class TempFolderUtility
 {
-    private static readonly Guid KnownFolderDownloads = new Guid("374DE290-123F-4565-9164-39C4925E467B");
+    private static readonly Guid KnownFolderDownloads = new("374DE290-123F-4565-9164-39C4925E467B");
     /// <summary>
     /// Creats a temporary directory in the users downloads directory.
     /// Exception is thrown if your system is unable to locate the Downloads folder.
