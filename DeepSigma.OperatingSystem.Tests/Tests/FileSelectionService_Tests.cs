@@ -1,4 +1,5 @@
 ﻿
+using DeepSigma.OperatingSystem.FileSystem;
 using Xunit;
 
 namespace DeepSigma.OperatingSystem.Tests.Tests

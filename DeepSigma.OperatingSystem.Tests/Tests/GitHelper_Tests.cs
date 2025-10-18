@@ -20,11 +20,10 @@ public class GitHelper_Tests
         string validUrl = "https://github.com/DeepSigma-LLC/Dotnet.DeepSigma.UnitTest.git";
         string targetDirectory = TempFolderUtility.GetDownloadsPath() + @"\" + Guid.NewGuid().ToString();
         Exception? result = GitHelper.DownloadGitRepository(validUrl, targetDirectory);
-        
         Assert.True(Directory.Exists(targetDirectory));
         Assert.Null(result);
 
         //Clean up
-        Directory.Delete(targetDirectory, true);
+        FileSystem.FileSystemUtilities.ForceDeleteAllFilesAndDirectoriesRecursively(targetDirectory);
     }
 }

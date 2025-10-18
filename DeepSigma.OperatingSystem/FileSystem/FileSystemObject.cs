@@ -1,14 +1,14 @@
 ﻿using DeepSigma.OperatingSystem.Enums;
 using DeepSigma.OperatingSystem.Models;
+using System.Diagnostics;
 
-namespace DeepSigma.OperatingSystem;
+namespace DeepSigma.OperatingSystem.FileSystem;
 
 /// <summary>
 /// Represents a file system object, which can be either a file or a directory.
 /// </summary>
 public class FileSystemObject
 {
-
     /// <summary>
     /// Type of file system object: File or Directory.
     /// </summary>
@@ -93,6 +93,88 @@ public class FileSystemObject
         }
     }
 
+    /// <summary>
+    /// Opens the file using the default application associated with its file type.
+    /// </summary>
+    /// <returns></returns>
+    public Exception? OpenFile()
+    {
+        if (!IsFile())
+        {
+            return new ArgumentException("The specified path is not a file.", nameof(OriginalPath));
+        }
+
+        if (FileProperties.FileName is null)
+        {
+            return new ArgumentException("File name is null.", nameof(FileProperties.FileName));
+        }
+
+        string full_path = this.DirectoryPath + this.FileProperties.FileName;
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = full_path,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Deletes the file from the file system.
+    /// </summary>
+    /// <returns></returns>
+    public Exception? DeleteFile()
+    {
+        if (!IsFile())
+        {
+            return new ArgumentException("The specified path is not a file.", nameof(OriginalPath));
+        }
+
+        if(FileProperties.FileName is null)
+        {
+            return new ArgumentException("File name is null.", nameof(FileProperties.FileName));
+        }
+
+        string full_path = this.DirectoryPath + this.FileProperties.FileName;
+        try
+        {
+            File.Delete(full_path);
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Opens the directory in the system's file explorer.
+    /// </summary>
+    /// <returns></returns>
+    public Exception? OpenDirectory()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = DirectoryPath,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+        return null;
+    }
+
+
     private void SetFileProperties()
     {
         if (IsFile())
@@ -102,6 +184,7 @@ public class FileSystemObject
             FileProperties.LastWriteTimeUtc = File.GetLastWriteTimeUtc(OriginalPath);
         }
     }
+
 
     private void SetDirectory()
     {

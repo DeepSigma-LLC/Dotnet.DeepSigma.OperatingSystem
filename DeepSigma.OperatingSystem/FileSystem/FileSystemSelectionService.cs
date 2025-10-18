@@ -1,7 +1,7 @@
 ﻿using DeepSigma.OperatingSystem.Models;
 using DeepSigma.OperatingSystem.Enums;
 
-namespace DeepSigma.OperatingSystem;
+namespace DeepSigma.OperatingSystem.FileSystem;
 
 /// <summary>
 /// Engine to process ignore file text values and generate filters.

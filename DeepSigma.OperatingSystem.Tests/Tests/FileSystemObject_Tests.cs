@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using DeepSigma.OperatingSystem.Enums;
+using DeepSigma.OperatingSystem.FileSystem;
 
 namespace DeepSigma.OperatingSystem.Tests.Tests;
 

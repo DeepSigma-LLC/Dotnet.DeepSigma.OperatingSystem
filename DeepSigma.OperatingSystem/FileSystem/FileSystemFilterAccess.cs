@@ -1,6 +1,4 @@
-﻿
-
-namespace DeepSigma.OperatingSystem;
+﻿namespace DeepSigma.OperatingSystem.FileSystem;
 
 internal class FileSystemFilterAccess
 {
