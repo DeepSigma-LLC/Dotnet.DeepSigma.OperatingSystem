@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using DeepSigma.General.Monads;
-using DeepSigma.General;
+using DeepSigma.Core.Monads;
+using DeepSigma.Core;
 
 namespace DeepSigma.OperatingSystem;
 

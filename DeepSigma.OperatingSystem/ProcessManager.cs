@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using DeepSigma.General.Monads;
+using DeepSigma.Core.Monads;
 
 namespace DeepSigma.OperatingSystem;
 
