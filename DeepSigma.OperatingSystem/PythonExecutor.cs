@@ -9,6 +9,16 @@ public static class PythonExecutor
     /// <summary>
     /// Executes a Python script and returns the output.
     /// </summary>
+    /// <remarks>
+    /// Example usage:
+    /// <code>
+    /// string scriptPath = "path/to/script.py";
+    /// string scriptArgs = "--option value";
+    /// string pythonExePath = "path/to/python.exe"; // Optional
+    /// 
+    /// ResultMonad&lt;string&gt; result = PythonExecutor.ExecuteScript(scriptPath, scriptArgs, pythonExePath);
+    /// </code>
+    /// </remarks>
     /// <param name="script_path">The path to the Python script.</param>
     /// <param name="script_args">Optional arguments to pass to the script.</param>
     /// <param name="python_exe_file_path">Optional python.exe path. Enables users to select a specific virutal enviornment executor.</param>
@@ -25,7 +35,9 @@ public static class PythonExecutor
     /// <summary>
     /// Gets Python virtual environments available on the system.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>
+    /// A ResultMonad containing an array of virtual environment names if successful, or an error if the command fails.
+    /// </returns>
     public static ResultMonad<string[]> GetPythonVirtualEnvironments()
     {
         string py_launcher_command = "py";
@@ -42,7 +54,9 @@ public static class PythonExecutor
     /// <summary>
     /// Gets install locations of Python on the system.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>
+    /// A ResultMonad containing an array of Python install locations if successful, or an error if the command fails.
+    /// </returns>
     public static ResultMonad<string[]> GetPythonInstallLocations()
     {
         ResultMonad<string> result = Terminal.RunCommand("where", "py");
@@ -58,7 +72,9 @@ public static class PythonExecutor
     /// <summary>
     /// Gets install locations of Python on the system.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>
+    /// True if Python is installed, false otherwise.
+    /// </returns>
     public static bool IsPythonInstalled()
     {
         return Terminal.IsProgramInstalled("python") || Terminal.IsProgramInstalled("py");

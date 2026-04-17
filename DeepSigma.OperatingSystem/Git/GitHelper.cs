@@ -1,6 +1,6 @@
 ﻿using DeepSigma.Core.Monads;
 
-namespace DeepSigma.OperatingSystem;
+namespace DeepSigma.OperatingSystem.Git;
 
 /// <summary>
 /// Provides helper methods for Git operations.
@@ -33,4 +33,6 @@ public static class GitHelper
 
         return outcome;
     }
+
+
 }

@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using DeepSigma.OperatingSystem.Git;
+using Xunit;
 
 namespace DeepSigma.OperatingSystem.Tests.Tests;
 

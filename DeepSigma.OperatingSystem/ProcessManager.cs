@@ -12,11 +12,8 @@ public static class ProcessManager
     /// Get all processes running on the local machine
     /// </summary>
     /// <returns></returns>
-    public static Process[] GetAllActiveProcess()
-    {
-        return Process.GetProcesses();
-    }
-
+    public static Process[] GetAllActiveProcess() => Process.GetProcesses();
+    
     /// <summary>
     /// Get all active processes by name.
     /// </summary>
@@ -26,7 +23,7 @@ public static class ProcessManager
     {
         if (string.IsNullOrWhiteSpace(processName))
         {
-            var exception = new ArgumentException("Process name cannot be null or empty.", nameof(processName));
+            ArgumentException exception = new("Process name cannot be null or empty.", nameof(processName));
             return new Error(exception);
         }
         return new Success<Process[]>(Process.GetProcessesByName(processName));
