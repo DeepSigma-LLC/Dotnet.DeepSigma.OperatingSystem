@@ -56,4 +56,46 @@ public static class Terminal
         }
         return new Error(new Exception($"Error executing terminal command: {errors}"));
     }
+
+    /// <summary>
+    /// Runs a terminal command asynchronously with optional arguments, working directory, and cancellation support.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="args"></param>
+    /// <param name="workingDirectory"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public static async Task<ResultMonad<string>> RunCommandAsync(string command, string? args = null, string? workingDirectory = null, CancellationToken ct = default)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = command,
+            Arguments = args ?? string.Empty,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        if (!string.IsNullOrEmpty(workingDirectory))
+            psi.WorkingDirectory = workingDirectory;
+
+        using var process = new Process { StartInfo = psi };
+
+        process.Start();
+
+        var outputTask = process.StandardOutput.ReadToEndAsync(ct);
+        var errorTask = process.StandardError.ReadToEndAsync(ct);
+
+        await process.WaitForExitAsync(ct);
+
+        string output = await outputTask;
+        string errors = await errorTask;
+
+        if (process.ExitCode == 0)
+        {
+            return new Success<string>(output.Trim());
+        }
+        return new Error(new Exception($"Error executing terminal command: {errors}"));
+    }
 }
