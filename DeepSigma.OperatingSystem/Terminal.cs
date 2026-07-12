@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
-using DeepSigma.Core.Monads;
+﻿using DeepSigma.Core.Monads;
+using System.Diagnostics;
+using System.Text;
+using System;
 
 namespace DeepSigma.OperatingSystem;
 
@@ -65,63 +67,37 @@ public static class Terminal
     }
 
     /// <summary>
-    /// Checks if a program is installed on the system by using the terminal 'where' command.
+    /// Checks if a program is installed by asking the OS to resolve it on PATH.
+    /// Uses 'where' on Windows and 'which' elsewhere.
     /// </summary>
-    /// <param name="program"></param>
-    /// <returns></returns>
     public static bool IsProgramInstalled(string program)
     {
-        return RunCommand("where", program).Match(
+        var locator = System.OperatingSystem.IsWindows() ? "where" : "which";
+        return RunCommand(locator, program).Match(
             success => true,
             error => false
         );
     }
 
     /// <summary>
-    /// Runs a terminal command with optional arguments and captures the output.
+    /// Runs a terminal command synchronously. Delegates to the async implementation
+    /// so both stdout and stderr are drained concurrently (avoids the pipe deadlock).
     /// </summary>
-    /// <param name="executable">The executable to run.</param>
-    /// <param name="args">Optional arguments to pass to the executable.</param>
-    /// <returns></returns>
-    public static ResultMonad<string> RunCommand(string executable, string? args = null)
-    {
-        var psi = new ProcessStartInfo
-        {
-            FileName = executable,
-            Arguments = args ?? string.Empty,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-        
-
-        using var process = new Process { StartInfo = psi };
-
-        process.Start();
-
-        string output = process.StandardOutput.ReadToEnd();
-        string errors = process.StandardError.ReadToEnd();
-
-        process.WaitForExit();
-
-        if (process.ExitCode == 0)
-        {
-            return new Success<string>(output.Trim());
-
-        }
-        return new Error(new Exception($"Error executing terminal command: {errors}"));
-    }
+    public static ResultMonad<string> RunCommand(
+        string executable,
+        string? args = null,
+        string? workingDirectory = null)
+        => RunCommandAsync(executable, args, workingDirectory).GetAwaiter().GetResult();
 
     /// <summary>
-    /// Runs a terminal command asynchronously with optional arguments, working directory, and cancellation support.
+    /// Runs a terminal command asynchronously with optional arguments, working directory,
+    /// and cancellation support. Kills the process tree if cancelled.
     /// </summary>
-    /// <param name="executable">The executable to run.</param>
-    /// <param name="args">Optional arguments to pass to the executable.</param>
-    /// <param name="workingDirectory">Optional working directory for the command.</param>
-    /// <param name="ct">Optional cancellation token.</param>
-    /// <returns></returns>
-    public static async Task<ResultMonad<string>> RunCommandAsync(string executable, string? args = null, string? workingDirectory = null, CancellationToken ct = default)
+    public static async Task<ResultMonad<string>> RunCommandAsync(
+        string executable,
+        string? args = null,
+        string? workingDirectory = null,
+        CancellationToken ct = default)
     {
         var psi = new ProcessStartInfo
         {
@@ -129,29 +105,58 @@ public static class Terminal
             Arguments = args ?? string.Empty,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
+            RedirectStandardInput = true,   // so the child can't block waiting on console input
             UseShellExecute = false,
-            CreateNoWindow = true
+            CreateNoWindow = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
         };
 
         if (!string.IsNullOrEmpty(workingDirectory))
             psi.WorkingDirectory = workingDirectory;
 
-        using var process = new Process { StartInfo = psi };
-
-        process.Start();
-
-        var outputTask = process.StandardOutput.ReadToEndAsync(ct);
-        var errorTask = process.StandardError.ReadToEndAsync(ct);
-
-        await process.WaitForExitAsync(ct).ConfigureAwait(false);
-
-        string output = await outputTask.ConfigureAwait(false);
-        string errors = await errorTask.ConfigureAwait(false);
-
-        if (process.ExitCode == 0)
+        try
         {
-            return new Success<string>(output.Trim());
+            using var process = new Process { StartInfo = psi };
+
+            if (!process.Start())
+                return new Error(new Exception($"Failed to start process '{executable}'."));
+
+            process.StandardInput.Close();
+
+            // Start BOTH reads before waiting. Reading them sequentially deadlocks
+            // as soon as the child fills the other pipe's buffer (~4 KB).
+            var outputTask = process.StandardOutput.ReadToEndAsync(ct);
+            var errorTask = process.StandardError.ReadToEndAsync(ct);
+
+            try
+            {
+                await process.WaitForExitAsync(ct).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                try { process.Kill(entireProcessTree: true); } catch { /* already gone */ }
+                throw;
+            }
+
+            var output = (await outputTask.ConfigureAwait(false)).Trim();
+            var errors = (await errorTask.ConfigureAwait(false)).Trim();
+
+            if (process.ExitCode == 0)
+            {
+                // Many tools (git, npm, pip) write informational text to stderr on success.
+                // Fall back to it rather than returning an empty string.
+                return new Success<string>(output.Length > 0 ? output : errors);
+            }
+
+            var detail = errors.Length > 0 ? errors : output;
+            return new Error(new Exception(
+                $"'{executable}' exited with code {process.ExitCode}: {detail}"));
         }
-        return new Error(new Exception($"Error executing terminal command: {errors}"));
+        catch (Exception ex)
+        {
+            // Win32Exception when the executable isn't on PATH, IOException, etc.
+            return new Error(ex);
+        }
     }
 }
