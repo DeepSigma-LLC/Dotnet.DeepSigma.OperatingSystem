@@ -33,6 +33,32 @@ public static class PythonExecutor
     }
 
     /// <summary>
+    /// Executes a Python script and returns the output.
+    /// </summary>
+    /// <remarks>
+    /// Example usage:
+    /// <code>
+    /// string scriptPath = "path/to/script.py";
+    /// string scriptArgs = "--option value";
+    /// string pythonExePath = "path/to/python.exe"; // Optional
+    /// 
+    /// ResultMonad&lt;string&gt; result = await PythonExecutor.ExecuteScriptAsync(scriptPath, scriptArgs, pythonExePath);
+    /// </code>
+    /// </remarks>
+    /// <param name="script_path">The path to the Python script.</param>
+    /// <param name="script_args">Optional arguments to pass to the script.</param>
+    /// <param name="python_exe_file_path">Optional python.exe path. Enables users to select a specific virutal enviornment executor.</param>
+    /// <returns>The output of the script execution.</returns>
+    public static async Task<ResultMonad<string>> ExecuteScriptAsync(string script_path, string? script_args = null, string? python_exe_file_path = null)
+    {
+        if (python_exe_file_path is null)
+        {
+            return await Terminal.RunCommandAsync("python", $"\"{script_path}\" {script_args}").ConfigureAwait(false);
+        }
+        return await Terminal.RunCommandAsync(python_exe_file_path, $"\"{script_path}\" {script_args}").ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Gets Python virtual environments available on the system.
     /// </summary>
     /// <returns>
