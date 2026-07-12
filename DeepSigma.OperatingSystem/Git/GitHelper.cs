@@ -23,7 +23,7 @@ public static class GitHelper
 
         string gitCloneCommand = $"git clone {repositoryUrl} {targetDirectory}";
 
-        ResultMonad<string> result = Terminal.RunCommand("cmd.exe", $"/C {gitCloneCommand}");
+        ResultMonad<string> result = Terminal.Run(GitCommand.Run(gitCloneCommand));
 
         Exception? outcome = null;
         result.Switch(

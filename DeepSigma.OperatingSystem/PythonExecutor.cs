@@ -66,8 +66,7 @@ public static class PythonExecutor
     /// </returns>
     public static ResultMonad<string[]> GetPythonVirtualEnvironments()
     {
-        string py_launcher_command = "py";
-        ResultMonad<string> result =  Terminal.RunCommand(py_launcher_command, "--list");
+        ResultMonad<string> result =  Terminal.Run(Shell.Run("py --list"));
 
         ResultMonad<string[]> final_results = result.Match<ResultMonad<string[]>>(
               success => new Success<string[]>(success.Result?.Split(" ")),
@@ -85,7 +84,7 @@ public static class PythonExecutor
     /// </returns>
     public static ResultMonad<string[]> GetPythonInstallLocations()
     {
-        ResultMonad<string> result = Terminal.RunCommand("where", "py");
+        ResultMonad<string> result = Terminal.Run(Shell.Run("where py"));
 
         ResultMonad<string[]> final_results = result.Match<ResultMonad<string[]>>(
             success => new Success<string[]>(success.Result?.Split(";")),
@@ -103,6 +102,6 @@ public static class PythonExecutor
     /// </returns>
     public static bool IsPythonInstalled()
     {
-        return Terminal.IsProgramInstalled("python") || Terminal.IsProgramInstalled("py");
+        return Terminal.Exists("python") || Terminal.Exists("py");
     }
 }
