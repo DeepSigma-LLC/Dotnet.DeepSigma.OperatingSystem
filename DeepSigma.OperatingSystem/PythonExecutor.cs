@@ -21,15 +21,15 @@ public static class PythonExecutor
     /// </remarks>
     /// <param name="script_path">The path to the Python script.</param>
     /// <param name="script_args">Optional arguments to pass to the script.</param>
-    /// <param name="python_exe_file_path">Optional python.exe path. Enables users to select a specific virutal enviornment executor.</param>
+    /// <param name="python_directory_path">Optional path to a Python virtual environment directory. Enables users to select a specific virtual environment executor.</param>
     /// <returns>The output of the script execution.</returns>
-    public static ResultMonad<string> ExecuteScript(string script_path, string? script_args = null, string? python_exe_file_path = null)
+    public static ResultMonad<string> ExecuteScript(string script_path, string? script_args = null, string? python_directory_path = null)
     {
-        if(python_exe_file_path is null)
+        if(python_directory_path is null)
         {
-            return Terminal.RunCommand("python", $"\"{script_path}\" {script_args}");
+            return Terminal.Run(Python.Script(script_path, script_args ?? ""));
         }
-        return Terminal.RunCommand(python_exe_file_path, $"\"{script_path}\" {script_args}");
+        return Terminal.Run(Python.VirtualEnv(python_directory_path).Script(script_path, script_args ?? ""));
     }
 
     /// <summary>
@@ -47,15 +47,15 @@ public static class PythonExecutor
     /// </remarks>
     /// <param name="script_path">The path to the Python script.</param>
     /// <param name="script_args">Optional arguments to pass to the script.</param>
-    /// <param name="python_exe_file_path">Optional python.exe path. Enables users to select a specific virutal enviornment executor.</param>
+    /// <param name="python_directory_path">Optional path to a Python virtual environment directory. Enables users to select a specific virtual environment executor.</param>
     /// <returns>The output of the script execution.</returns>
-    public static async Task<ResultMonad<string>> ExecuteScriptAsync(string script_path, string? script_args = null, string? python_exe_file_path = null)
+    public static async Task<ResultMonad<string>> ExecuteScriptAsync(string script_path, string? script_args = null, string? python_directory_path = null)
     {
-        if (python_exe_file_path is null)
+        if (python_directory_path is null)
         {
-            return await Terminal.RunCommandAsync("python", $"\"{script_path}\" {script_args}").ConfigureAwait(false);
+            return await Terminal.RunAsync(Python.Script(script_path, script_args ?? "")).ConfigureAwait(false);
         }
-        return await Terminal.RunCommandAsync(python_exe_file_path, $"\"{script_path}\" {script_args}").ConfigureAwait(false);
+        return await Terminal.RunAsync(Python.VirtualEnv(python_directory_path).Script(script_path, script_args ?? "")).ConfigureAwait(false);
     }
 
     /// <summary>
