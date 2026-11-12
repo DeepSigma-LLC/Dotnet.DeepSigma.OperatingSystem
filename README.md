@@ -79,6 +79,21 @@ if (ex is not null)
 }
 ```
 
+### `GitClient`
+
+Runs Git operations asynchronously in an existing working directory. Arguments are passed directly to Git, so paths and commit messages do not need shell quoting. Clone requires an existing empty working directory.
+
+```csharp
+using DeepSigma.OperatingSystem.Git;
+
+var git = new GitClient(@"C:\Temp\repo");
+var result = await git.AddFileAsync("file with spaces.txt");
+if (!result.Success)
+{
+    Console.WriteLine(result.Error);
+}
+```
+
 ### `ProcessManager`
 
 Inspects and controls local processes.

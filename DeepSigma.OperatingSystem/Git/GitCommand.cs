@@ -4,7 +4,7 @@ namespace DeepSigma.OperatingSystem.Git;
 
 internal class GitCommandRunner
 {
-    public async Task<GitResult> RunAsync(string arguments, string workingDirectory, CancellationToken ct = default)
+    public async Task<GitResult> RunAsync(string workingDirectory, CancellationToken ct, params string[] arguments)
     {
         var result = await Terminal.RunAsync(GitCommand.Run(arguments).In(workingDirectory), ct);
 

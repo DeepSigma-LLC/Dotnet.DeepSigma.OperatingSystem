@@ -1,4 +1,6 @@
-﻿namespace DeepSigma.OperatingSystem.Git;
+﻿using System.Globalization;
+
+namespace DeepSigma.OperatingSystem.Git;
 
 
 /// <summary>
@@ -32,7 +34,7 @@ public class GitClient
     /// <returns>A task that represents the asynchronous operation. The task result contains a GitResult indicating the outcome
     /// of the initialization.</returns>
     public Task<GitResult> InitAsync(CancellationToken ct = default)
-        => _runner.RunAsync("init", _repoPath, ct);
+        => _runner.RunAsync(_repoPath, ct, "init");
 
     /// <summary>
     /// Clones a Git repository from the specified remote URL into the current repository path asynchronously.
@@ -42,7 +44,7 @@ public class GitClient
     /// <returns>A task that represents the asynchronous clone operation. The task result contains a GitResult indicating the
     /// outcome of the operation.</returns>
     public Task<GitResult> CloneAsync(string remoteUrl, CancellationToken ct = default)
-        => _runner.RunAsync($"clone {remoteUrl} .", _repoPath, ct);
+        => _runner.RunAsync(_repoPath, ct, "clone", "--", remoteUrl, ".");
 
     /// <summary>
     /// Adds the specified file to the Git index asynchronously.
@@ -55,7 +57,7 @@ public class GitClient
     /// of the add operation.
     /// </returns>
     public Task<GitResult> AddFileAsync(string filePath, CancellationToken ct = default)
-        => _runner.RunAsync($"add \"{filePath}\"", _repoPath, ct);
+        => _runner.RunAsync(_repoPath, ct, "add", "--", filePath);
 
     /// <summary>
     /// Stages all changes in the repository for the next commit asynchronously.
@@ -66,7 +68,7 @@ public class GitClient
     /// of the add operation.
     /// </returns>
     public Task<GitResult> AddAllAsync(CancellationToken ct = default)
-        => _runner.RunAsync("add .", _repoPath, ct);
+        => _runner.RunAsync(_repoPath, ct, "add", ".");
 
     /// <summary>
     /// Commits staged changes to the repository asynchronously using the specified commit message.
@@ -78,7 +80,7 @@ public class GitClient
     /// outcome of the commit.
     /// </returns>
     public Task<GitResult> CommitAsync(string message, CancellationToken ct = default)
-        => _runner.RunAsync($"commit -m \"{EscapeMessage(message)}\"", _repoPath, ct);
+        => _runner.RunAsync(_repoPath, ct, "commit", "-m", message.Replace("\n", " "));
 
     /// <summary>
     /// Asynchronously retrieves a list of recent Git commit log entries for the repository.
@@ -89,7 +91,7 @@ public class GitClient
     /// A task that represents the asynchronous operation. The task result contains a GitResult with the commit log entries.
     /// </returns>
     public Task<GitResult> LogAsync(int count = 10, CancellationToken ct = default)
-        => _runner.RunAsync($"log --oneline -n {count}", _repoPath, ct);
+        => _runner.RunAsync(_repoPath, ct, "log", "--oneline", "-n", count.ToString(CultureInfo.InvariantCulture));
 
     /// <summary>
     /// Fetches and integrates changes from the remote repository into the current branch asynchronously.
@@ -100,7 +102,7 @@ public class GitClient
     /// about the pull process.
     /// </returns>
     public Task<GitResult> PullAsync(CancellationToken ct = default)
-        => _runner.RunAsync("pull", _repoPath, ct);
+        => _runner.RunAsync(_repoPath, ct, "pull");
 
     /// <summary>
     /// Pushes local commits to the remote Git repository asynchronously.
@@ -111,17 +113,5 @@ public class GitClient
     /// outcome of the push.
     /// </returns>
     public Task<GitResult> PushAsync(CancellationToken ct = default)
-        => _runner.RunAsync("push", _repoPath, ct);
-
-    /// <summary>
-    /// Escapes double quotes and replaces newline characters in the specified message string.
-    /// </summary>
-    /// <remarks>Use this method to prepare message strings for contexts where unescaped double quotes or
-    /// newlines may cause formatting or parsing issues.</remarks>
-    /// <param name="msg">The message string to be escaped. Cannot be null.</param>
-    /// <returns>
-    /// A string with all double quotes escaped and newline characters replaced with spaces.
-    /// </returns>
-    private static string EscapeMessage(string msg) =>
-        msg.Replace("\"", "\\\"").Replace("\n", " ");
+        => _runner.RunAsync(_repoPath, ct, "push");
 }
