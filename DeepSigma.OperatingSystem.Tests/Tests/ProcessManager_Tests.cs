@@ -18,24 +18,21 @@ public class ProcessManager_Tests
     public void GetActiveProcessByName_ShouldReturnProcesses()
     {
         ResultMonad<Process[]> result = ProcessManager.GetActiveProcessByName("explorer");
-        result.Switch(
-            success =>
-            {
-                Assert.NotNull(success.Result);
-                Assert.True(success.Result.Count() > 0);
-            },
-            error => Assert.Fail("Expected success but got error - " + error.Exception.Message)
-            );
+        Assert.True(result is SuccessResult<Process[]>);
+        if (result is SuccessResult<Process[]> success)
+        {
+            Assert.NotNull(success.Result);
+            Assert.True(success.Result.Length > 0);
+        }
     }
 
     [Fact]
     public void GetActiveProcessByName_ShouldReturnErrorForEmptyName()
     {
         var result = ProcessManager.GetActiveProcessByName("");
-        result.Switch(
-            success => Assert.Fail("Expected error, but got success"),
-            error => Assert.NotNull(error)
-            );
+        Assert.True(result is ErrorResult);
+        if (result is ErrorResult error)
+            Assert.IsType<ArgumentException>(error.Exception);
     }
 
 }

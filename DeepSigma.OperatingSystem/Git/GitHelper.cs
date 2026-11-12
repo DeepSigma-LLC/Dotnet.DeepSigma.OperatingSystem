@@ -21,17 +21,13 @@ public static class GitHelper
         if (string.IsNullOrWhiteSpace(targetDirectory))
             return new ArgumentException("Target directory cannot be null or empty.", nameof(targetDirectory));
 
-        string gitCloneCommand = $"git clone {repositoryUrl} {targetDirectory}";
+        ResultMonad<string> result = Terminal.Run(GitCommand.Run("clone", repositoryUrl, targetDirectory));
 
-        ResultMonad<string> result = Terminal.Run(GitCommand.Run(gitCloneCommand));
-
-        Exception? outcome = null;
-        result.Switch(
-            success => outcome = null,
-            error => outcome = error.Exception
-        );
-
-        return outcome;
+        return result switch
+        {
+            SuccessResult<string> => null,
+            ErrorResult error => error.Exception,
+        };
     }
 
 

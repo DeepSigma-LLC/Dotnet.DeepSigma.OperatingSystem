@@ -19,12 +19,12 @@ public static class ProgramLocator
         var resolved = Cache.GetOrAdd(program, static p => Search(p).FirstOrDefault());
 
         return resolved is not null
-            ? new Success<string>(resolved)
-            : new Error(new FileNotFoundException(
+            ? new SuccessResult<string>(resolved)
+            : new ErrorResult(new FileNotFoundException(
                 $"'{program}' was not found on PATH.", program));
     }
 
-    public static bool Exists(string program) => Locate(program).Match(_ => true, _ => false);
+    public static bool Exists(string program) => Locate(program) is SuccessResult<string>;
 
     /// <summary>
     /// EVERY match on PATH, in resolution order. The one that wins is [0].

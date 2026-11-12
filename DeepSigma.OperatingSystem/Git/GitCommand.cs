@@ -8,9 +8,10 @@ internal class GitCommandRunner
     {
         var result = await Terminal.RunAsync(GitCommand.Run(arguments).In(workingDirectory), ct);
 
-        return result.Match<GitResult>(
-            success => GitResult.Ok(success.Result ?? string.Empty),
-            error => GitResult.Fail(error.Exception.Message, 1)
-        );
+        return result switch
+        {
+            SuccessResult<string> success => GitResult.Ok(success.Result ?? string.Empty),
+            ErrorResult error => GitResult.Fail(error.Exception.Message, 1),
+        };
     }
 }

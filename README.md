@@ -1,6 +1,6 @@
 # DeepSigma.OperatingSystem
 
-A focused C# utility library for interacting with operating-system features such as terminal commands, local processes, Git, Python discovery/execution, temporary folders, and file-system inspection. The package targets **.NET 10** and is published as **DeepSigma.OperatingSystem**. 
+A focused C# utility library for interacting with operating-system features such as terminal commands, local processes, Git, Python discovery/execution, temporary folders, and file-system inspection. The package targets **.NET 11** and is published as **DeepSigma.OperatingSystem**.
 
 ## Highlights
 
@@ -16,7 +16,7 @@ A focused C# utility library for interacting with operating-system features such
 
 ## Package
 
-- **Target framework:** `net10.0`
+- **Target framework:** `net11.0`
 - **Package ID:** `DeepSigma.OperatingSystem`
 - **License:** MIT
 
@@ -39,24 +39,26 @@ using DeepSigma.OperatingSystem.Models;
 
 ### `Terminal`
 
-Runs commands and returns a `DeepSigma.General.Monads.ResultMonad`.
+Runs commands and returns a `DeepSigma.Core.Monads.ResultMonad<string>`.
 
 ```csharp
+using DeepSigma.Core.Monads;
 using DeepSigma.OperatingSystem;
 
-var result = Terminal.RunCommand("dotnet", "--info");
+var result = Terminal.Run(Dotnet.Run("--info"));
 
-result.Switch(
-    success => Console.WriteLine(success.Result),
-    error => Console.WriteLine(error.Exception.Message)
-);
+switch (result)
+{
+    case SuccessResult<string> success: Console.WriteLine(success.Result); break;
+    case ErrorResult error: Console.WriteLine(error.Exception.Message); break;
+}
 ```
 
 Check whether a program is available on the machine:
 
 ```csharp
-bool gitInstalled = Terminal.IsProgramInstalled("git");
-bool pythonInstalled = Terminal.IsProgramInstalled("python");
+bool gitInstalled = Terminal.Exists("git");
+bool pythonInstalled = Terminal.Exists("python");
 ```
 
 ### `GitHelper`
@@ -64,7 +66,7 @@ bool pythonInstalled = Terminal.IsProgramInstalled("python");
 Clones a repository to a target directory by calling `git clone`.
 
 ```csharp
-using DeepSigma.OperatingSystem;
+using DeepSigma.OperatingSystem.Git;
 
 Exception? ex = GitHelper.DownloadGitRepository(
     "https://github.com/example/repo.git",
@@ -82,24 +84,28 @@ if (ex is not null)
 Inspects and controls local processes.
 
 ```csharp
+using DeepSigma.Core.Monads;
 using DeepSigma.OperatingSystem;
+using System.Diagnostics;
 
 // List all processes
 var processes = ProcessManager.GetAllActiveProcess();
 
 // Find by name
 var findResult = ProcessManager.GetActiveProcessByName("notepad");
-findResult.Switch(
-    success => Console.WriteLine($"Found {((System.Diagnostics.Process[])success.Result!).Length} process(es)."),
-    error => Console.WriteLine(error.Exception.Message)
-);
+switch (findResult)
+{
+    case SuccessResult<Process[]> success: Console.WriteLine($"Found {success.Result?.Length} process(es)."); break;
+    case ErrorResult error: Console.WriteLine(error.Exception.Message); break;
+}
 
 // Kill by name
 var killResult = ProcessManager.KillProcessByName("notepad");
-killResult.Switch(
-    success => Console.WriteLine($"Killed {success.Result} process(es)."),
-    errors => Console.WriteLine($"Failed: {string.Join(", ", errors.Exceptions.Select(x => x.Message))}")
-);
+switch (killResult)
+{
+    case SuccessResult<int> success: Console.WriteLine($"Killed {success.Result} process(es)."); break;
+    case ErrorResults errors: Console.WriteLine($"Failed: {string.Join(", ", errors.Exceptions.Select(x => x.Message))}"); break;
+}
 ```
 
 ### `PythonExecutor`
@@ -107,14 +113,16 @@ killResult.Switch(
 Runs Python scripts and checks for Python installations.
 
 ```csharp
+using DeepSigma.Core.Monads;
 using DeepSigma.OperatingSystem;
 
 var scriptResult = PythonExecutor.ExecuteScript("hello.py", "--name DeepSigma");
 
-scriptResult.Switch(
-    success => Console.WriteLine(success.Result),
-    error => Console.WriteLine(error.Exception.Message)
-);
+switch (scriptResult)
+{
+    case SuccessResult<string> success: Console.WriteLine(success.Result); break;
+    case ErrorResult error: Console.WriteLine(error.Exception.Message); break;
+}
 ```
 
 Use a specific Python executable, such as one inside a virtual environment:
@@ -221,8 +229,10 @@ FileSystemUtilities.ForceDeleteAllFilesAndDirectoriesRecursively(
 ## Typical workflow
 
 ```csharp
+using DeepSigma.Core.Monads;
 using DeepSigma.OperatingSystem;
 using DeepSigma.OperatingSystem.FileSystem;
+using DeepSigma.OperatingSystem.Git;
 
 // 1. Clone a repository
 var cloneError = GitHelper.DownloadGitRepository(
@@ -239,11 +249,12 @@ if (cloneError is not null)
 var repo = new FileSystemObject(@"C:\Temp\repo", 1);
 
 // 3. Run a command inside the environment
-var command = Terminal.RunCommand("cmd.exe", "/C dir C:\\Temp\\repo");
-command.Switch(
-    success => Console.WriteLine(success.Result),
-    error => Console.WriteLine(error.Exception.Message)
-);
+var command = Terminal.Run(Shell.Run(@"dir C:\Temp\repo"));
+switch (command)
+{
+    case SuccessResult<string> success: Console.WriteLine(success.Result); break;
+    case ErrorResult error: Console.WriteLine(error.Exception.Message); break;
+}
 
 // 4. Clean up
 FileSystemUtilities.ForceDeleteAllFilesAndDirectoriesRecursively(@"C:\Temp\repo");
@@ -253,7 +264,7 @@ FileSystemUtilities.ForceDeleteAllFilesAndDirectoriesRecursively(@"C:\Temp\repo"
 
 This library is best described as **Windows-oriented** in its current form:
 
-- `GitHelper` invokes `cmd.exe`
+- `GitHelper` invokes the `git` executable
 - `PythonExecutor.GetPythonInstallLocations()` uses `where`
 - `TempFolderUtility` calls `shell32.dll` to resolve the Downloads folder
 - examples and tests assume Windows-style paths and tooling
@@ -262,11 +273,11 @@ Some APIs, such as `ProcessManager` and parts of `Terminal`, may still work cros
 
 ## Error handling
 
-Most command/process helpers return `DeepSigma.General.Monads` result types rather than throwing immediately. Expect to handle:
+Most command/process helpers return `DeepSigma.Core.Monads` union types rather than throwing immediately. Pattern-match their cases:
 
-- `Success`
-- `Error`
-- `Errors`
+- `SuccessResult<T>`
+- `ErrorResult`
+- `ErrorResults` (for `ResultMonadMultiError<T>`)
 
 For APIs that return `Exception?`, `null` means success.
 

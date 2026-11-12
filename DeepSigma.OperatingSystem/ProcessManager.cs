@@ -24,9 +24,9 @@ public static class ProcessManager
         if (string.IsNullOrWhiteSpace(processName))
         {
             ArgumentException exception = new("Process name cannot be null or empty.", nameof(processName));
-            return new Error(exception);
+            return new ErrorResult(exception);
         }
-        return new Success<Process[]>(Process.GetProcessesByName(processName));
+        return new SuccessResult<Process[]>(Process.GetProcessesByName(processName));
     }
 
 
@@ -39,7 +39,7 @@ public static class ProcessManager
     {
         if (string.IsNullOrWhiteSpace(processName))
         {
-            return new Errors( [new ArgumentException("Process name cannot be null or empty.", nameof(processName))]);
+            return new ErrorResults( [new ArgumentException("Process name cannot be null or empty.", nameof(processName))]);
         }
 
         List<Exception> error_log = [];
@@ -60,9 +60,9 @@ public static class ProcessManager
 
         if (error_log.Count >= 1)
         {
-            return new Errors(error_log.ToArray());
+            return new ErrorResults(error_log.ToArray());
         }
-        return new Success<int>(count);
+        return new SuccessResult<int>(count);
     }
 
 }

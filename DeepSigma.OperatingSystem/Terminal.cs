@@ -57,7 +57,7 @@ public static class Terminal
             using var process = new Process { StartInfo = psi };
 
             if (!process.Start())
-                return new Error(new Exception($"Failed to start: {command}"));
+                return new ErrorResult(new Exception($"Failed to start: {command}"));
 
             process.StandardInput.Close(); // nothing can block waiting on input
 
@@ -71,21 +71,21 @@ public static class Terminal
             catch (OperationCanceledException) when (!ct.IsCancellationRequested)
             {
                 try { process.Kill(entireProcessTree: true); } catch { }
-                return new Error(new TimeoutException($"Timed out after {command.Timeout}: {command}"));
+                return new ErrorResult(new TimeoutException($"Timed out after {command.Timeout}: {command}"));
             }
 
             var output = (await outputTask.ConfigureAwait(false)).Trim();
             var errors = (await errorTask.ConfigureAwait(false)).Trim();
 
             if (process.ExitCode == 0)
-                return new Success<string>(output.Length > 0 ? output : errors);
+                return new SuccessResult<string>(output.Length > 0 ? output : errors);
 
-            return new Error(new Exception(
+            return new ErrorResult(new Exception(
                 $"Exit code {process.ExitCode} from '{command}': {(errors.Length > 0 ? errors : output)}"));
         }
         catch (Exception ex)
         {
-            return new Error(ex);
+            return new ErrorResult(ex);
         }
     }
 
@@ -95,7 +95,7 @@ public static class Terminal
     public static bool Exists(string program)
     {
         var locator = System.OperatingSystem.IsWindows() ? "where" : "which";
-        return Run(TerminalCommand.Raw(locator, program)).Match(_ => true, _ => false);
+        return Run(TerminalCommand.Raw(locator, program)) is SuccessResult<string>;
     }
 
 }

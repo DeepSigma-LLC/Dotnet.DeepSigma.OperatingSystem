@@ -68,12 +68,11 @@ public static class PythonExecutor
     {
         ResultMonad<string> result =  Terminal.Run(Shell.Run("py --list"));
 
-        ResultMonad<string[]> final_results = result.Match<ResultMonad<string[]>>(
-              success => new Success<string[]>(success.Result?.Split(" ")),
-              error => new Error(error.Exception)
-        );
-
-        return final_results;
+        return result switch
+        {
+            SuccessResult<string> success => new SuccessResult<string[]>(success.Result?.Split(" ")),
+            ErrorResult error => new ErrorResult(error.Exception),
+        };
     }
 
     /// <summary>
@@ -86,12 +85,11 @@ public static class PythonExecutor
     {
         ResultMonad<string> result = Terminal.Run(Shell.Run("where py"));
 
-        ResultMonad<string[]> final_results = result.Match<ResultMonad<string[]>>(
-            success => new Success<string[]>(success.Result?.Split(";")),
-            error => new Error(error.Exception)
-        );
-
-        return final_results;
+        return result switch
+        {
+            SuccessResult<string> success => new SuccessResult<string[]>(success.Result?.Split(";")),
+            ErrorResult error => new ErrorResult(error.Exception),
+        };
     }
 
     /// <summary>
